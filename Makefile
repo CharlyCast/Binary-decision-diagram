@@ -6,9 +6,9 @@ bdd.cmo: bdd.ml
 
 # Remove all temporary files
 clean:
-	rm -rf *.cmo
-	rm -rf *.cmi
+	rm -f *.cmo
+	rm -f *.cmi
 
 # Remove every compiled files, can be used to make a complete rebuild
 mrproper: clean
-	rm -rf bdd
+	rm -f bdd
