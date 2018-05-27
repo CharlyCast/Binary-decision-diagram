@@ -6,13 +6,13 @@ Implement binary desicion diagram
 
 The parser is able to convert boolean expression to internal representation under the type Prop.prop
 
-You can test the parser with the commands : 
+You can test the parser with the commands :
 
 - - -
 
-make test_prop
+make test_parser
 
-./test_prop
+./test_parser
 
 - - -
 
