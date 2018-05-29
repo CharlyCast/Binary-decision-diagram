@@ -60,27 +60,31 @@ struct
             | [] ->
                 ()
             | x::s ->
-                let firstChar = x.[0] in
-                let lastChar = x.[String.length x -1] in
-                if firstChar = '(' || firstChar = '~'
-                then
-                    (Queue.push (String.make 1 firstChar) tkq;
-                    if String.length x > 1
-                    then
-                        aux ((String.sub x 1 (String.length x -1))::s)
-                    else
-                        aux s)
-                else if lastChar = ')'
-                then
-                    (let lastString = String.make 1 lastChar in
-                    if String.length x > 1
-                    then
-                        Queue.push (String.sub x 0 (String.length x -1)) tkq;
-                    Queue.push lastString tkq;
-                    aux s)
+                if String.length x = 0
+                then 
+                    aux s
                 else
-                    (Queue.push x tkq;
-                    aux s)
+                    (let firstChar = x.[0] in
+                    let lastChar = x.[String.length x -1] in
+                    if firstChar = '(' || firstChar = '~'
+                    then
+                        (Queue.push (String.make 1 firstChar) tkq;
+                        if String.length x > 1
+                        then
+                            aux ((String.sub x 1 (String.length x -1))::s)
+                        else
+                            aux s)
+                    else if lastChar = ')'
+                    then
+                        (let lastString = String.make 1 lastChar in
+                        if String.length x > 1
+                        then
+                            Queue.push (String.sub x 0 (String.length x -1)) tkq;
+                        Queue.push lastString tkq;
+                        aux s)
+                    else
+                        (Queue.push x tkq;
+                        aux s))
         in
         aux tokens;
         tkq

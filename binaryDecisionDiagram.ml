@@ -15,6 +15,12 @@ struct
     type bdd =
         node array
 
+    type value =
+        (T.t * bool)
+
+    type valuation = 
+        value list
+
     let rev_bdd (diag : bdd) : bdd =
         let l = Array.to_list diag in
         let size = (List.length l) -1 in
@@ -48,6 +54,7 @@ struct
 
 
     let dt_to_bdd (dt : DT.t) : bdd =
+        let dt = DT.compress dt in
         match dt with
         | DT.Leaf b ->
             if b
@@ -110,4 +117,61 @@ struct
             in
             Printf.printf "%d %s %s %s\n" i (T.type_to_string x) fstr tstr
         done
+    
+    let read_bdd () =
+        let prop = DT.TParser.convert () in
+        let dt = DT.prop_to_dt prop in
+        dt_to_bdd dt
+
+    let is_valid (diag : bdd) : bool =
+        let (x, l, r) = diag.(0) in
+        if x = T.default && l = True && r = True
+        then
+            true
+        else
+            false
+
+    let satisfiable (diag : bdd) : valuation =
+        let size = Array.length diag - 1 in
+        let rec aux (c : child) =
+            if c = Label 0
+            then
+                []
+            else
+                let k = ref (-1) in 
+                let b = ref true in
+                let v = ref T.default in
+                for i = 0 to size do
+                    let (x, l, r) = diag.(i) in
+                    if l = c
+                    then
+                        (k := i;
+                        b := true;
+                        v := x)
+                    else if r = c
+                    then
+                        (k := i;
+                        b := false;
+                        v := x)
+                done;
+                if !k >= 0
+                then
+                    (!v, !b) :: (aux (Label !k))
+                else
+                    []
+        in 
+        List.rev (aux True)
+
+    let rec print_valuation (valu : valuation) =
+        match valu with
+        | [] ->
+            ()
+        | (x,b)::s ->
+            if b
+            then
+                (Printf.printf "%s %s\n" (T.type_to_string x) "@t";
+                print_valuation s)
+            else
+                (Printf.printf "%s %s\n" (T.type_to_string x) "@f";
+                print_valuation s)
 end
