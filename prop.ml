@@ -2,6 +2,9 @@ include Type
 
 module Prop = functor (T : Type) ->
 struct
+
+    module S = Set.Make(String)
+
     type prop = 
         | True
         | False
@@ -14,8 +17,10 @@ struct
 
     let print_prop (p : prop) =
         let rec aux (p' : prop) (acc : int) =
-            let padding = String.make (4*acc) '-' in
-            print_string padding;
+            if acc > 0
+            then
+                (let padding = String.make (4*(acc-1)) ' ' in
+                print_string (padding ^ "|" ^ "---"));
             match p' with
             | True ->
                 print_string " true\n"
@@ -43,7 +48,26 @@ struct
             | Val x ->
                 print_string (" " ^ (T.type_to_string x) ^ "\n")
         in
-        aux p 0
+        print_string "\n";
+        aux p 0;
+        print_string "\n"
+
+    let get_variables (p : prop) : T.t list =
+        let h = ref S.empty in
+        let rec aux (p' : prop) =
+            match p' with
+            | Val x ->
+                h := S.add (T.type_to_string x) !h
+            | True | False ->
+                ()
+            | Not p1 ->
+                aux p1
+            | And (p1, p2) | Or (p1, p2) | Imply (p1, p2) | Ioi (p1, p2) ->
+                aux p1;
+                aux p2
+        in
+        aux p;
+        List.map T.string_to_type (S.elements !h)
 
     let eval (p : prop) (h : (T.t, bool) Hashtbl.t) : bool =
         let rec aux (p' : prop) : bool =

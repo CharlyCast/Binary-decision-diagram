@@ -16,7 +16,7 @@ make test_parser
 
 - - -
 
-Acceptable symbols are :
+Valid symbols are :
 
 + True : true
 + False : false
