@@ -1,7 +1,6 @@
-include BinaryDecisionDiagram
+include DecisionTree
 
-module BDD = BinaryDecisionDiagram(StringType)
-module DT = BDD.DT
+module DT = DecisionTree(StringType)
 
 let main =
     print_string "Input proposition :\n";
@@ -11,7 +10,5 @@ let main =
     DT.print_dt dt;
     print_string "Compressed decision tree :\n";
     DT.print_dt (DT.compress dt);
-    print_string "Binary decision diagram :\n";
-    BDD.print_bdd (BDD.dt_to_bdd dt)
 
 

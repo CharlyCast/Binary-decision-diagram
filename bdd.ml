@@ -3,7 +3,7 @@ include BinaryDecisionDiagram
 module BDD = BinaryDecisionDiagram(StringType)
 module DT = BDD.DT
 
-let test () =
+let tree () =
     let prop = DT.TParser.convert () in
     print_string "Full decision tree :\n";
     let dt = DT.prop_to_dt prop in
@@ -41,9 +41,9 @@ let main =
     if Array.length Sys.argv > 1 
     then
         (let str = Sys.argv.(1) in
-        if String.equal str "test"
+        if String.equal str "tree"
         then
-            test ()
+            tree ()
         else if String.equal str "dump"
         then
             dump ()
