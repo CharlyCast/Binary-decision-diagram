@@ -14,7 +14,7 @@ let values () =
             (let s = String.split_on_char ' ' str in
             let var = StringType.string_to_type (List.hd s) in
             let value = List.hd (List.tl s) in
-            if (String.equal value "false") || (String.equal value "f")
+            if (String.equal value "false") || (String.equal value "f") || (String.equal value "@f")
             then 
                 Hashtbl.add h var false
             else

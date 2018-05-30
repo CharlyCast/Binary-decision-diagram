@@ -21,6 +21,8 @@ struct
     type valuation = 
         value list
 
+    exception MissingValue
+
     let rev_bdd (diag : bdd) : bdd =
         let l = Array.to_list diag in
         let size = (List.length l) -1 in
@@ -166,7 +168,7 @@ struct
         match valu with
         | [] ->
             ()
-        | (x,b)::s ->
+        | (x, b)::s ->
             if b
             then
                 (Printf.printf "%s %s\n" (T.type_to_string x) "@t";
@@ -174,4 +176,57 @@ struct
             else
                 (Printf.printf "%s %s\n" (T.type_to_string x) "@f";
                 print_valuation s)
+
+    let rec read_valuation () : valuation =
+        let str = read_line () in
+        if not (String.equal str "")
+        then
+            (let s = String.split_on_char ' ' str in
+            let var = T.string_to_type (List.hd s) in
+            let value = List.hd (List.tl s) in
+            if (String.equal value "false") || (String.equal value "f" || (String.equal value "@f"))
+            then 
+                (var, false) :: (read_valuation ())
+            else
+                (var, true) :: (read_valuation ()))
+        else
+            []
+
+    let get_value (x : T.t) (values : valuation) : bool =
+        let rec aux (v : valuation) : bool =
+            match v with
+            | (x', b)::s ->
+                if x' = x
+                then
+                    b
+                else 
+                    aux s
+            | [] ->
+                raise MissingValue
+        in
+        aux values
+
+    let evaluate (diag : bdd) (values : valuation) : bool =
+        let rec aux (i : int) : bool =
+            let (x, t, f) = diag.(i) in
+            let b = get_value x values in
+            if b
+            then
+                (match t with
+                | Label k ->
+                    aux k
+                | True ->
+                    true
+                | False ->
+                    false)
+            else
+                (match f with
+                | Label k ->
+                    aux k
+                | True ->
+                    true
+                | False ->
+                    false)
+        in
+        aux 0
 end
