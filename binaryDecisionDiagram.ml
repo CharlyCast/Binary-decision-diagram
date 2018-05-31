@@ -1,6 +1,20 @@
 include DecisionTree
 
-module BinaryDecisionDiagram = functor (T : Type) ->
+module type Bdd = functor (T : Type) ->
+sig
+    type bdd
+    type valuation
+
+    val print_bdd : bdd -> unit
+    val read_bdd : unit -> bdd
+    val evaluate : bdd -> valuation -> bool
+    val is_valid : bdd -> bool
+    val satisfiable : bdd -> valuation
+    val read_valuation : unit -> valuation
+    val print_valuation : valuation -> unit
+end
+
+module BinaryDecisionDiagram : Bdd = functor (T : Type) -> 
 struct
     module DT = DecisionTree(T)
 

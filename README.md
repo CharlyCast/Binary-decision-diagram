@@ -10,6 +10,19 @@ The achieve that the project is composed of three major component :
 + The decision tree module
 + The binary decision diagram module
 
+The whole module is parametrised by a module that should defina type following the signature 
+
+``` Ocaml
+module type Type = sig
+    type t
+    val default : t
+    val string_to_type : string -> t
+    val type_to_string : t -> string
+end
+```
+
+This type is used to represent variables internally, by default the module StringType is included.
+
 ## Features
 
 ### propositional formula
@@ -31,8 +44,8 @@ for instance, a valid expression could be :
 
 ### dinary decision diagram
 
-A binary decision diagram is composed of node that point to two other nodes, until they reach the node True or the node False. The edges are labeled with True of False.
-To evaluate the corresponding expression one should follow the edges corresponding to the value of the corresponding variables.
+A binary decision diagram is composed of node that point to two other nodes and so on until they reach the node True or the node False. The edges are labeled with True of False.
+To evaluate the whole expression one should follow the edges corresponding to the value of the corresponding variables.
 
 For instance, the expression "a && (~b || c)" produce the diagram :
 
@@ -45,7 +58,7 @@ For instance, the expression "a && (~b || c)" produce the diagram :
 where @t is the label true and @f the label false.
 If a = @t, b = @t and c = @f then we can evaluate the expression as follow:
 
-+ We start from the node with id 0, a in this case, its value is true so we follow the first edge with label 1.
++ We start from the node with id 0 (this is always the entry point), a in this case, its value is true so we follow the first edge with label 1.
 + The node with id 1 is b, its value is true so we follow the first edge again, with label 2.
 + The node with id 2 is c, this time c is false so we follow the second edge, it points toward @f so the expression is evaluated to false.
 
@@ -65,22 +78,6 @@ this create the bdd executable. To run it use the command
 
 Where cmd should be one among :
 
-#### tree
-
-Ask for a propositionnal formula in input and print a representation as a full decision tree, a simplyfied decision tree and the binary decision diagram.
-
-For instance, the expression a && b produce the full tree :
-```
- a
-|--- b
-    |--- False
-    |--- False
-|--- b
-    |--- False
-    |--- True
-```
-The first edge is always labeled False and the second True.
-
 #### dump
 
 Ask for a propositionnal formula in input and print its binary decision diagram.
@@ -97,17 +94,19 @@ Ask for a propositionnal formula in input and print a valuation that thatisfy th
 
 Ask for a valuation in input, with the format :
 
+```
 Variable value
+```
 
-with Variable the name of the variable and value its value (f or @f for false, anything else for true). Skip a line to validate the input and print the corresponding valuation.
+With "Variable" the name of the variable and "value" its value ("f" or "@f" for false, anything else for true). Skip a line to validate the input and print the corresponding valuation.
 
 #### eval
 
-Ask for a propositionnal formula in input and the a valuation. Print the evaluation of the formula.
+Ask for a propositionnal formula in input and a valuation. Print the evaluation of the formula.
 
 ## The Parser
 
-The parser is able to convert boolean expression to internal representation under the type Prop.prop
+The parser is able to convert input boolean expression seen as string to internal representation under the type Prop.prop
 
 You can test the parser with the commands :
 
@@ -118,13 +117,25 @@ make test_parser
 
 It takes a propositionnal formula in input and print the proposition tree.
 
+For instance, the expression "a && b || c" produce proposition tree :
+```
+ or
+|--- and
+    |--- a
+    |--- b
+|--- c
+```
+
+which mean that we have an "or" operation between in one hand a && b and in the other hand c.
+
+
 ## Decision Tree
 
-This module is build upon the parser and allow to convert the input propositional formula of type DecisionTree.t.
+This module is build upon the parser and convert the input propositional formula to another internal representation under the type DecisionTree.t. This representation use a tree in which nodes are variables with two childs (one if the variable is true, the other one if not) and leaves are boolean.
 
-The module is able to compress the produced tree in order to feed it to the module BinaryDecisionDiagram.
+This module is able to compress the produced tree in order to feed it to the module BinaryDecisionDiagram.
 
-You can test the module with the commands :
+The module can be tested with the commands :
 
 ```
 make test_decisionTree
@@ -133,8 +144,55 @@ make test_decisionTree
 
 Which print the decision tree and the compressed decision tree that correspond to the input formula.
 
+For instance :
+
+```
+Input proposition :
+a && b
+Full decision tree :
+
+ a
+|--- b
+    |--- False
+    |--- False
+|--- b
+    |--- False
+    |--- True
+
+Compressed decision tree :
+
+ a
+|--- False
+|--- b
+    |--- False
+    |--- True
+
+```
+
+"a" is the root, the first variable to be evaluated, the first branch should be evaluated if "a" is false, the second one if "a" is true. In the compressed tree, we see that if "a" is false, the proposition is also false and there is no need to evaluate b.
+
 ## Binary Decision Diagram
 
 The core module of the project which is build upon decision tree and feature a new type to implement an efficient representation of propositionnal formula.
 
-You can test it with the bdd.ml file, as explained above.
+Unlike compressed decision tree in which the same subtree can appear more than once, binary decision diagrams maximize the sharing between subtrees and there is a guarantee that there is no redundancy.
+
+The module implement the following signature :
+
+```OCaml
+module type Bdd = functor (T : Type) ->
+sig
+    type bdd
+    type valuation
+
+    val print_bdd : bdd -> unit
+    val read_bdd : unit -> bdd
+    val evaluate : bdd -> valuation -> bool
+    val is_valid : bdd -> bool
+    val satisfiable : bdd -> valuation
+    val read_valuation : unit -> valuation
+    val print_valuation : valuation -> unit
+end
+```
+
+And can be teste throug the bdd.ml file as explained above.
