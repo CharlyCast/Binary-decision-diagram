@@ -37,6 +37,7 @@ struct
 
     exception MissingValue
 
+    (* bdd are created in the reverse order *)
     let rev_bdd (diag : bdd) : bdd =
         let l = Array.to_list diag in
         let size = (List.length l) -1 in
@@ -68,7 +69,7 @@ struct
         in
         Array.of_list (aux (List.rev l))
 
-
+    (* Convert the input decision tree to a binary decision diagram*)
     let dt_to_bdd (dt : DT.t) : bdd =
         let dt = DT.compress dt in
         match dt with
@@ -206,6 +207,7 @@ struct
         else
             []
 
+    (* Return the value of a variable in the valuation *)
     let get_value (x : T.t) (values : valuation) : bool =
         let rec aux (v : valuation) : bool =
             match v with

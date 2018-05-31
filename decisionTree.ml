@@ -32,6 +32,7 @@ struct
         aux dt 0;
         print_string "\n"
 
+    (* Proposition tree to decision tree *)
     let prop_to_dt (p : prop) : t = 
         let vars = get_variables p in
         let h = Hashtbl.create (List.length vars) in
@@ -48,6 +49,8 @@ struct
         in
         aux vars
 
+    (* Compress the decision tree by remplacing recursively every node *)
+    (* with the two same childrens True or False by True or False *)
     let rec compress (dt : t) : t =
         match dt with
         | Leaf b ->

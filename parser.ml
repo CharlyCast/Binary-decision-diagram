@@ -2,7 +2,7 @@ include Prop
 
 module Parser = functor (T : Type) ->
 struct
-    module TProp = Prop (T)
+    module TProp = Prop(T)
 
     type token_value =
         | True
@@ -22,6 +22,7 @@ struct
 
     type symbol = string * token_value * priority * associativity
 
+    (* Match a string to a symbol *)
     let token_type (t : string) : symbol =
         if String.equal t "true"
         then 
@@ -53,6 +54,9 @@ struct
         else 
             (t, Val, 1, Null)
 
+    (* Transform the input list of token separated with space *)
+    (* into a queue and handle the case of symbol without space between *)
+    (* such as parenthesis or not : ~a *)
     let token_list_to_queue (tokens : string list) =
         let tkq = Queue.create () in
         let rec aux (tk : string list) =
@@ -92,6 +96,8 @@ struct
     exception MissingParenthesis
 
     (* Parse the input string using the shunting-yard alogirthm *)
+    (* The output Reverse Polish notation can be easily converted *)
+    (* to a proposition tree *)
     let parse () = 
         let tokens = String.split_on_char ' ' (read_line ()) in
         let tkq = token_list_to_queue tokens in (* Input stack that contains the tokens to be parsed *)
@@ -151,6 +157,7 @@ struct
 
     exception RPNError
 
+    (* Reverse Polish notation to proposition tree *)
     let rpn_to_prop (st : symbol Stack.t) : TProp.prop = 
         let rec aux () = 
             let (str, t, p, a) = Stack.pop st in

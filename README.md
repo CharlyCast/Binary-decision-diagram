@@ -1,6 +1,6 @@
 # Binary-decision-diagram
 
-Implement binary desicion diagram.
+Implement binary decision diagram.
 
 The main feature of the project is the BinaryDecisionDiagram module which is able to represent propositional formula from the standard input as compact binary decision diagram and perform various operations on them, such as evaluation.
 
@@ -10,7 +10,7 @@ The achieve that the project is composed of three major component :
 + The decision tree module
 + The binary decision diagram module
 
-The whole module is parametrised by a module that should defina type following the signature 
+The whole module is parametrised by a module that should defin a type following the signature 
 
 ``` Ocaml
 module type Type = sig
@@ -33,7 +33,7 @@ In this project propositional formula should use the following symbols :
 + And : && (surrounded with blank spaces)
 + Or : || (surrounded with blank spaces)
 + Imply : -> (surrounded with blank spaces)
-+ If and only if : <-> (surrounder with blank spaces)
++ If and only if : <-> (surrounded with blank spaces)
 + True : true
 + False : false
 + Any variable : any other unused string without spaces
@@ -42,7 +42,7 @@ In this project propositional formula should use the following symbols :
 for instance, a valid expression could be :
 ~a && (c || b -> a)
 
-### dinary decision diagram
+### binary decision diagram
 
 A binary decision diagram is composed of node that point to two other nodes and so on until they reach the node True or the node False. The edges are labeled with True of False.
 To evaluate the whole expression one should follow the edges corresponding to the value of the corresponding variables.
@@ -80,15 +80,15 @@ Where cmd should be one among :
 
 #### dump
 
-Ask for a propositionnal formula in input and print its binary decision diagram.
+Ask for a propositional formula in input and print its binary decision diagram.
 
 #### valid
 
-Ask for a propositionnal formula in input and exit with statut 0 if the formula is valid otherwise exit with statut 1.
+Ask for a propositional formula in input and exit with status 0 if the formula is valid otherwise exit with status 1.
 
 #### satisfiable
 
-Ask for a propositionnal formula in input and print a valuation that thatisfy the proposition if it is satisfiable.
+Ask for a propositional formula in input and print a valuation that satisfy the proposition if it is satisfiable.
 
 #### valuation
 
@@ -102,7 +102,7 @@ With "Variable" the name of the variable and "value" its value ("f" or "@f" for 
 
 #### eval
 
-Ask for a propositionnal formula in input and a valuation. Print the evaluation of the formula.
+Ask for a propositional formula in input and a valuation. Print the evaluation of the formula.
 
 ## The Parser
 
@@ -115,7 +115,7 @@ make test_parser
 ./test_parser
 ```
 
-It takes a propositionnal formula in input and print the proposition tree.
+It takes a propositional formula in input and print the proposition tree.
 
 For instance, the expression "a && b || c" produce proposition tree :
 ```
@@ -131,7 +131,7 @@ which mean that we have an "or" operation between in one hand a && b and in the 
 
 ## Decision Tree
 
-This module is build upon the parser and convert the input propositional formula to another internal representation under the type DecisionTree.t. This representation use a tree in which nodes are variables with two childs (one if the variable is true, the other one if not) and leaves are boolean.
+This module is build upon the parser and convert the input propositional formula to another internal representation under the type DecisionTree.t. This representation use a tree in which nodes are variables with two children (one if the variable is true, the other one if not) and leaves are boolean.
 
 This module is able to compress the produced tree in order to feed it to the module BinaryDecisionDiagram.
 
@@ -173,7 +173,7 @@ Compressed decision tree :
 
 ## Binary Decision Diagram
 
-The core module of the project which is build upon decision tree and feature a new type to implement an efficient representation of propositionnal formula.
+The core module of the project which is build upon decision tree and feature a new type to implement an efficient representation of propositional formula.
 
 Unlike compressed decision tree in which the same subtree can appear more than once, binary decision diagrams maximize the sharing between subtrees and there is a guarantee that there is no redundancy.
 
@@ -195,4 +195,4 @@ sig
 end
 ```
 
-And can be teste throug the bdd.ml file as explained above.
+And can be tested through the bdd.ml file as explained above.

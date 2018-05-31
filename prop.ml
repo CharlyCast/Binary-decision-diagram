@@ -1,6 +1,23 @@
 include Type
 
-module Prop = functor (T : Type) ->
+module type PropType = functor (T : Type) ->
+sig
+    type prop =
+        | True
+        | False
+        | Not of prop
+        | And of prop * prop
+        | Or of prop * prop
+        | Imply of prop * prop
+        | Ioi of prop * prop
+        | Val of T.t
+        
+    val print_prop : prop -> unit
+    val get_variables : prop -> T.t list
+    val eval : prop -> (T.t, bool) Hashtbl.t -> bool
+end
+
+module Prop : PropType = functor (T : Type) ->
 struct
 
     module S = Set.Make(String)
